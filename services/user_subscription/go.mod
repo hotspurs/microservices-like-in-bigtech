@@ -1,4 +1,4 @@
-module auth
+module user_subscription
 
 go 1.22.2
 
