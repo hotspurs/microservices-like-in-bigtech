@@ -18,5 +18,10 @@ plugins:
       - generate_unbound_methods=true
       - standalone=false
       - logtostderr=true
+  # protoc-gen-openapiv2 - swagger api (openapiv2)
+  - local: protoc-gen-openapiv2
+    out: swagger
+    opt:
+      - logtostderr=true
 inputs:
   - directory: proto

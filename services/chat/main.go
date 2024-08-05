@@ -4,6 +4,7 @@ import (
 	pb "chat/pkg/api/chat"
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -79,6 +80,14 @@ func main() {
 		if err := httpServer.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		e := echo.New()
+		e.Static("/docs", "./swagger")
+		e.Logger.Fatal(e.Start(":8083"))
 	}()
 
 	wg.Wait()
