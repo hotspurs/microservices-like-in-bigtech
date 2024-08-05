@@ -2,35 +2,86 @@ package main
 
 import (
 	pb "chat/pkg/api/chat"
+	"context"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
+	"sync"
 )
 
 type server struct {
 	pb.UnimplementedChatServiceServer
+	mx sync.RWMutex
 }
 
-func NewServer() *server {
-	return &server{}
+func NewServer() (*server, error) {
+	return &server{}, nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":8082")
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	server, err := NewServer()
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to create server: %v", err)
 	}
 
-	s := grpc.NewServer()
-	pb.RegisterChatServiceServer(s, NewServer())
+	var wg sync.WaitGroup
 
-	reflection.Register(s)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+		grpcServer := grpc.NewServer()
+		pb.RegisterChatServiceServer(grpcServer, server)
+
+		reflection.Register(grpcServer)
+
+		lis, err := net.Listen("tcp", ":8082")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		log.Printf("server listening at %v", lis.Addr())
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+
+		// SaveNote:
+		// grpc_cli call --json_input --json_output localhost:8082 NotesService/SaveNote '{"info":{"title":"my note","content":"my note content"}}'
+		// ListNotes:
+		// grpc_cli call --json_input --json_output localhost:8082 NotesService/ListNotes '{}'
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Register gRPC server endpoint
+		// Note: Make sure the gRPC server is running properly and accessible
+		mux := runtime.NewServeMux()
+		if err = pb.RegisterChatServiceHandlerServer(ctx, mux, server); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+		httpServer := &http.Server{Handler: mux}
+
+		lis, err := net.Listen("tcp", ":8080")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		// Start HTTP server (and proxy calls to gRPC server endpoint)
+		log.Printf("server listening at %v", lis.Addr())
+		if err := httpServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+
+	wg.Wait()
 	//e := echo.New()
 	//e.GET("/", func(c echo.Context) error {
 	//	return c.String(http.StatusOK, "Hello, Chat!")

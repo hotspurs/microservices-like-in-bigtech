@@ -14,15 +14,19 @@ message CreateChatRequest {
   repeated uint64 user_ids = 1 [json_name = "user_ids"];
 }
 
-message SendMessageRequest {
+message CreateChatResponse {
+  uint64 id = 1 [json_name = "id"];
+}
+
+message SendMessageData {
   string text = 1 [json_name = 'text'];
   uint64 user_id = 2 [json_name = "user_id"];
 }
 
-message SendMessageResponse {
-  ChatMessage message = 1 [json_name = "message"];
+message SendMessageRequest {
+  SendMessageData data = 1 [json_name = 'data'];
 }
 
-message CreateChatResponse {
-  uint64 id = 1 [json_name = "id"];
+message SendMessageResponse {
+  ChatMessage message = 1 [json_name = "message"];
 }

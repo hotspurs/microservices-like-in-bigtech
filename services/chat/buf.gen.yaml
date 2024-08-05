@@ -10,5 +10,13 @@ plugins:
     out: pkg
     opt:
       - paths=source_relative
+  # protoc-gen-grpc-gateway - http proxy grpc-gateway
+  - local: protoc-gen-grpc-gateway
+    out: pkg
+    opt:
+      - paths=source_relative
+      - generate_unbound_methods=true
+      - standalone=false
+      - logtostderr=true
 inputs:
   - directory: proto

@@ -3,13 +3,24 @@ syntax = "proto3";
 package chat;
 
 import "api/chat/messages.proto";
+import "google/api/annotations.proto";
 
 option go_package = "chat/pkg/api/chat;chat";
 
 // ChatService - chat service
 service ChatService {
   // SaveNote - save note
-  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {}
+  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chat"
+      body: "user_ids"
+    };
+  }
   // SendMessage - send message
-  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/message"
+      body: "data"
+    };
+  }
 }
