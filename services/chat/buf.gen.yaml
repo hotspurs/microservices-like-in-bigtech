@@ -1,0 +1,14 @@
+version: v2
+plugins:
+  # protoc-gen-go - go types
+  - local: protoc-gen-go
+    out: pkg
+    opt:
+      - paths=source_relative
+  # protoc-gen-go - grpc service and client
+  - local: protoc-gen-go-grpc
+    out: pkg
+    opt:
+      - paths=source_relative
+inputs:
+  - directory: proto

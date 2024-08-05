@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "chat/pkg/api/chat;chat";
+
+message ChatMessage {
+  uint64 id = 1 [json_name = "id"];
+  uint64 user_id = 2 [json_name = "user_id"];
+  string text = 3 [json_name = "text"];
+}
+
+message CreateChatRequest {
+  repeated uint64 user_ids = 1 [json_name = "user_ids"];
+}
+
+message SendMessageRequest {
+  string text = 1 [json_name = 'text'];
+  uint64 user_id = 2 [json_name = "user_id"];
+}
+
+message SendMessageResponse {
+  ChatMessage message = 1 [json_name = "message"];
+}
+
+message CreateChatResponse {
+  uint64 id = 1 [json_name = "id"];
+}
