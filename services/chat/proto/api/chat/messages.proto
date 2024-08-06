@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package chat;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "chat/pkg/api/chat;chat";
+// ChatMessage - chat message
+message ChatMessage {
+  // id - id
+  uint64 id = 1 [json_name = "id"];
+  // user_id - user_id
+  uint64 user_id = 2 [json_name = "user_id"];
+  // text = text
+  string text = 3 [json_name = "text"];
+  // timestamp - timestamp
+  google.protobuf.Timestamp timestamp = 4 [json_name = "timestamp"];
+}
+// CreateChatRequest - create chat request
+message CreateChatRequest {
+  // user_ids - user_ids
+  repeated uint64 user_ids = 1 [json_name = "user_ids"];
+}
+// CreateChatResponse - create chat response
+message CreateChatResponse {
+  // id - id
+  uint64 id = 1 [json_name = "id"];
+}
+// SendMessageData - send message data
+message SendMessageData {
+  // text - text
+  string text = 1 [
+    json_name = "text",
+    (buf.validate.field).string.min_len = 3
+  ];
+  // user_id - user_id
+  uint64 user_id = 2 [
+    json_name = "user_id",
+    (buf.validate.field).required = true
+  ];
+}
+
+// SendMessageRequest - send message request
+message SendMessageRequest {
+  // data - data
+  SendMessageData data = 1 [
+    json_name = "data",
+    (buf.validate.field).required = true
+  ];
+}
+// SendMessageResponse - send message response
+message SendMessageResponse {
+  // message - message
+  ChatMessage message = 1 [json_name = "message"];
+}
+// GetMessagesRequest - get message request
+message GetMessagesRequest {
+  // chat_id - chat_id
+  uint64 chat_id = 1 [
+    json_name = "chat_id",
+    (buf.validate.field).required = true
+  ];
+}
+// GetMessagesResponse - get message response
+message GetMessagesResponse {
+  // items - items
+  repeated ChatMessage items = 1 [json_name = "items"];
+}
