@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package chat;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "chat/pkg/api/chat;chat";
@@ -22,12 +23,21 @@ message CreateChatResponse {
 }
 
 message SendMessageData {
-  string text = 1 [json_name = "text"];
-  uint64 user_id = 2 [json_name = "user_id"];
+  string text = 1 [
+    json_name = "text",
+    (buf.validate.field).string.min_len = 3
+  ];
+  uint64 user_id = 2 [
+    json_name = "user_id",
+    (buf.validate.field).required = true
+  ];
 }
 
 message SendMessageRequest {
-  SendMessageData data = 1 [json_name = "data"];
+  SendMessageData data = 1 [
+    json_name = "data",
+    (buf.validate.field).required = true
+  ];
 }
 
 message SendMessageResponse {
@@ -35,7 +45,10 @@ message SendMessageResponse {
 }
 
 message GetMessagesRequest {
-  uint64 chat_id = 1 [json_name = "chat_id"];
+  uint64 chat_id = 1 [
+    json_name = "chat_id",
+    (buf.validate.field).required = true
+  ];
 }
 
 message GetMessagesResponse {
