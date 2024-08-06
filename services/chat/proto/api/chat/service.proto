@@ -31,7 +31,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 // ChatService - chat service
 service ChatService {
-  // SaveNote - save note
+  // CreateChat - create chat
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {
     option (google.api.http) = {
       post: "/api/v1/chat"
