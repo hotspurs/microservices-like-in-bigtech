@@ -2,12 +2,15 @@ syntax = "proto3";
 
 package chat;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "chat/pkg/api/chat;chat";
 
 message ChatMessage {
   uint64 id = 1 [json_name = "id"];
   uint64 user_id = 2 [json_name = "user_id"];
   string text = 3 [json_name = "text"];
+  google.protobuf.Timestamp timestamp = 4 [json_name = "timestamp"];
 }
 
 message CreateChatRequest {
@@ -19,14 +22,22 @@ message CreateChatResponse {
 }
 
 message SendMessageData {
-  string text = 1 [json_name = 'text'];
+  string text = 1 [json_name = "text"];
   uint64 user_id = 2 [json_name = "user_id"];
 }
 
 message SendMessageRequest {
-  SendMessageData data = 1 [json_name = 'data'];
+  SendMessageData data = 1 [json_name = "data"];
 }
 
 message SendMessageResponse {
   ChatMessage message = 1 [json_name = "message"];
+}
+
+message GetMessagesRequest {
+  uint64 chat_id = 1 [json_name = "chat_id"];
+}
+
+message GetMessagesResponse {
+  repeated ChatMessage items = 1 [json_name = "items"];
 }

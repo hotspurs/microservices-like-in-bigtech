@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
 	"net/http"
@@ -20,6 +21,17 @@ type server struct {
 
 func NewServer() (*server, error) {
 	return &server{}, nil
+}
+
+func (s *server) SendMessage(_ context.Context, _ *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
+	return &pb.SendMessageResponse{
+		Message: &pb.ChatMessage{
+			Id:        1,
+			Text:      "text",
+			UserId:    1,
+			Timestamp: timestamppb.Now(),
+		},
+	}, nil
 }
 
 func main() {

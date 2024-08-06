@@ -98,6 +98,38 @@
           "ChatService"
         ]
       }
+    },
+    "/api/v1/messages": {
+      "get": {
+        "summary": "GetMessages - get messages",
+        "operationId": "ChatService_GetMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/chatGetMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chat_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -114,6 +146,10 @@
         },
         "text": {
           "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -123,6 +159,18 @@
         "id": {
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "chatGetMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/chatChatMessage"
+          }
         }
       }
     },

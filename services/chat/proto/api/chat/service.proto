@@ -45,4 +45,8 @@ service ChatService {
       body: "data"
     };
   }
+  // GetMessages - get messages
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {
+    option (google.api.http) = {get: "/api/v1/messages"};
+  }
 }
