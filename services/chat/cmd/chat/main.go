@@ -164,7 +164,7 @@ func main() {
 			fmt.Println(res)
 			return c.String(res.StatusCode, "")
 		})
-		e.Static("/docs", "./swagger")
+		e.Static("/docs", "swagger")
 		e.Any("/*", echo.WrapHandler(mux))
 
 		e.Logger.Fatal(e.Start(":8080"))

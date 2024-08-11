@@ -6,16 +6,16 @@ COPY go.mod go.sum ./
 
 RUN go mod download
 
-COPY *.go ./
+COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/main
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /bin/user ./cmd/user
 
 FROM scratch AS final
 
 WORKDIR /
 
-COPY --from=build /bin/main /main
+COPY --from=build /bin/user /user
 
 EXPOSE 8080
 
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/user"]
