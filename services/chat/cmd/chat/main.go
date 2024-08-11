@@ -1,6 +1,7 @@
 package main
 
 import (
+	chatrepository "chat/internal/app/adapters/chat_repository"
 	"chat/internal/app/server"
 	"chat/internal/app/usecase/chat"
 	"context"
@@ -16,6 +17,7 @@ func main() {
 	// =========================
 
 	// repository
+	chatRepository := chatrepository.NewRepository()
 
 	// services
 
@@ -23,7 +25,9 @@ func main() {
 	// usecases
 	// =========================
 
-	chatUsecase := chat.NewUsecase(chat.Deps{})
+	chatUsecase := chat.NewUsecase(chat.Deps{
+		chatRepository,
+	})
 
 	// =========================
 	// delivery
