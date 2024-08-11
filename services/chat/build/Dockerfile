@@ -6,16 +6,18 @@ COPY go.mod go.sum ./
 
 RUN go mod download
 
-COPY *.go ./
+COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/main
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /bin/chat ./cmd/chat
 
 FROM scratch AS final
 
 WORKDIR /
 
-COPY --from=build /bin/main /main
+COPY --from=build /bin/chat /chat
+COPY swagger swagger
 
 EXPOSE 8080
+EXPOSE 8082
 
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/chat"]
