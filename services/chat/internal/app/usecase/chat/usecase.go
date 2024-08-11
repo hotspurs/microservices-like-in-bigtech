@@ -11,6 +11,10 @@ type Usecase interface {
 }
 
 type (
+	// User - port (вторичный)
+	User interface {
+		Check(ctx context.Context, users []models.UserID) error
+	}
 	// ChatRepository - port (вторичный)
 	ChatRepository interface {
 		CreateChat(ctx context.Context, order *models.Chat) error
@@ -21,6 +25,7 @@ type (
 type Deps struct {
 	// Adapters
 	ChatRepository ChatRepository
+	User           User
 }
 
 type usecase struct {

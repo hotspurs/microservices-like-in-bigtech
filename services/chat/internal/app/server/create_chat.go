@@ -1,6 +1,7 @@
 package server
 
 import (
+	"chat/internal/app/models"
 	"chat/internal/app/usecase/chat"
 	pb "chat/pkg/api/chat"
 	"context"
@@ -40,7 +41,14 @@ func validateCreateChatRequest(_ *pb.CreateChatRequest) error {
 }
 
 func newChatFromPbCreateChatRequest(req *pb.CreateChatRequest) *chat.CreateChatDTO {
+	items := req.GetUserIds()
+	userIds := make([]models.UserID, 0, len(items))
+
+	for _, item := range items {
+		userIds = append(userIds, models.UserID(item))
+	}
+
 	return &chat.CreateChatDTO{
-		UserIds: req.GetUserIds(),
+		UserIds: userIds,
 	}
 }

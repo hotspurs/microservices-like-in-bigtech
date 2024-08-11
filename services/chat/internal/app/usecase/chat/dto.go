@@ -1,7 +1,9 @@
 package chat
 
+import "chat/internal/app/models"
+
 type (
 	CreateChatDTO struct {
-		UserIds []uint64
+		UserIds []models.UserID
 	}
 )
