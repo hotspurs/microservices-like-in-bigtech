@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -42,7 +43,7 @@ type Server struct {
 
 	grpcGateway struct {
 		lis    net.Listener
-		server *http.Server
+		server *echo.Echo
 	}
 }
 
@@ -103,14 +104,22 @@ func New(ctx context.Context, cfg Config, d Deps) (*Server, error) {
 		// middlewares
 		// ...
 
-		httpServer := &http.Server{Handler: mux}
+		server := echo.New()
+		server.GET("/live", func(c echo.Context) error {
+			return c.String(http.StatusOK, "")
+		})
 
+		server.GET("/ready", func(c echo.Context) error {
+			return c.String(http.StatusOK, "")
+		})
+		server.Static("/docs", "swagger")
+		server.Any("/*", echo.WrapHandler(mux))
 		lis, err := net.Listen("tcp", cfg.GRPCGatewayPort)
 		if err != nil {
 			return nil, fmt.Errorf("server: failed to listen: %v", err)
 		}
 
-		srv.grpcGateway.server = httpServer
+		srv.grpcGateway.server = server
 		srv.grpcGateway.lis = lis
 	}
 
@@ -131,7 +140,7 @@ func (s *Server) Run(ctx context.Context) error {
 
 	group.Go(func() error {
 		log.Println("start serve grpc gateway", s.grpcGateway.lis.Addr())
-		if err := s.grpcGateway.server.Serve(s.grpcGateway.lis); err != nil {
+		if err := s.grpcGateway.server.Server.Serve(s.grpcGateway.lis); err != nil {
 			return fmt.Errorf("server: serve grpc gateway: %v", err)
 		}
 		return nil
